@@ -1,0 +1,1 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/rthjwervr60mu87d?svg=true)](https://ci.appveyor.com/project/EleonoraPopushoi/ordercardwithdelivery)
