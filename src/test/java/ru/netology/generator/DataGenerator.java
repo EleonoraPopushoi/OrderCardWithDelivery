@@ -1,4 +1,4 @@
-package ru.netology.rest.generator;
+package ru.netology.generator;
 
 import com.github.javafaker.Faker;
 

@@ -1,15 +1,16 @@
-package ru.netology.rest.order;
+package ru.netology.order;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
-import ru.netology.rest.generator.DataGenerator;
+import ru.netology.generator.DataGenerator;
 
 import static com.codeborne.selenide.Condition.exactText;
-import static com.codeborne.selenide.Condition.visible;
+
 import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
+import static com.codeborne.selenide.Condition.visible;
 
 public class OrderCardWithDeliveryTest {
     DataGenerator dataGenerator = new DataGenerator();
@@ -19,7 +20,7 @@ public class OrderCardWithDeliveryTest {
 
     @BeforeEach
     void Setup() {
-        open("http://localhost:9999/");
+        open("http://localhost:9999");
     }
 
     @Test
@@ -42,7 +43,7 @@ public class OrderCardWithDeliveryTest {
 
     @Test
     void shouldNotSubmitWithoutCity() {
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
+        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(7));
         $("[name=name]").setValue(dataGenerator.makeName());
         $("[name=phone]").setValue(dataGenerator.makePhone());
         $(".checkbox__box").click();
@@ -88,6 +89,6 @@ public class OrderCardWithDeliveryTest {
         $("[name=name]").setValue(dataGenerator.makeName());
         $("[name=phone]").setValue(dataGenerator.makePhone());
         $(".button__text").click();
-        $(".checkbox_theme_alfa-on-white.input_invalid.checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
+        $(".input_invalid").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
 }
