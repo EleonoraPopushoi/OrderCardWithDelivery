@@ -89,6 +89,6 @@ public class OrderCardWithDeliveryTest {
         $("[name=name]").setValue(dataGenerator.makeName());
         $("[name=phone]").setValue(dataGenerator.makePhone());
         $(".button__text").click();
-        $(".input_invalid").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
+        $(".checkbox_size_m.input_invalid .checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
 }
