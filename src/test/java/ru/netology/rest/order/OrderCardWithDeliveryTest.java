@@ -12,8 +12,10 @@ import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
 
 public class OrderCardWithDeliveryTest {
-
     DataGenerator dataGenerator = new DataGenerator();
+    String name = dataGenerator.makeName();
+    String phone = dataGenerator.makePhone();
+    String city = dataGenerator.makeCity();
 
     @BeforeEach
     void Setup() {
@@ -22,9 +24,6 @@ public class OrderCardWithDeliveryTest {
 
     @Test
     void shouldSubmitRequest() {
-        String name = dataGenerator.makeName();
-        String phone = dataGenerator.makePhone();
-        String city = dataGenerator.makeCity();
 
         $("[placeholder='Город']").setValue(city);
         $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
@@ -37,7 +36,7 @@ public class OrderCardWithDeliveryTest {
         $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(4));
         $(".button__text").click();
         $(withText("У вас уже запланирована встреча на другую дату. Перепланировать?")).shouldBe(visible);
-        $("[data-test-id=replaning-notification] button.button").click();
+        $("[data-test-id=replan-notification] button.button").click();
         $(withText("Успешно")).shouldBe(visible);
     }
 
@@ -48,7 +47,7 @@ public class OrderCardWithDeliveryTest {
         $("[name=phone]").setValue(dataGenerator.makePhone());
         $(".checkbox__box").click();
         $(".button__text").click();
-        $(".input_theme_alfa-on-white.input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        $(".input_type_text.input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
@@ -89,6 +88,6 @@ public class OrderCardWithDeliveryTest {
         $("[name=name]").setValue(dataGenerator.makeName());
         $("[name=phone]").setValue(dataGenerator.makePhone());
         $(".button__text").click();
-        $(".input_invalid").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
+        $(".checkbox_theme_alfa-on-white.input_invalid.checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
 }
