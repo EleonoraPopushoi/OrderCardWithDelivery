@@ -3,20 +3,19 @@ package ru.netology.order;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openqa.selenium.Keys;
-import ru.netology.generator.DataGenerator;
-
-import static com.codeborne.selenide.Condition.exactText;
-
+import ru.netology.generator.DataGenerator.*;
+import static com.codeborne.selenide.Condition.*;
+import static com.codeborne.selenide.Selectors.byText;
 import static com.codeborne.selenide.Selectors.withText;
 import static com.codeborne.selenide.Selenide.$;
 import static com.codeborne.selenide.Selenide.open;
-import static com.codeborne.selenide.Condition.visible;
 
 public class OrderCardWithDeliveryTest {
-    DataGenerator dataGenerator = new DataGenerator();
-    String name = dataGenerator.makeName();
-    String phone = dataGenerator.makePhone();
-    String city = dataGenerator.makeCity();
+
+    String name = makeName();
+    String phone = makePhone();
+    String city = makeCity();
+
 
     @BeforeEach
     void Setup() {
@@ -26,68 +25,70 @@ public class OrderCardWithDeliveryTest {
     @Test
     void shouldSubmitRequest() {
 
-        $("[placeholder='Город']").setValue(city);
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
-        $("[name=name]").setValue(name);
-        $("[name=phone]").setValue(phone);
-        $(".checkbox__box").click();
-        $(".button__text").click();
-        $(withText("Успешно")).shouldBe(visible);
-        $("input[placeholder=\"Дата встречи\"]").doubleClick().sendKeys(Keys.BACK_SPACE);
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(4));
-        $(".button__text").click();
+        $("[data-test-id=city] input__control").setValue("Астрахань");
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.CONTROL,"a",Keys.DELETE));
+        $("[data-test-id=date] input").setValue(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue(makeName);
+        $("[data-test-id=phone] input").setValue(makePhone);
+        $("[data-test-id=agreement]").click();
+        $(byText("Запланировать")).click();
+        $("[data-test-id=success-notification].notification__content").waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на" + formatter.format(newDate)));
+        $("[data-test-id=date] input").sendKeys(Keys.chord(Keys.CONTROL,"a",Keys.DELETE));
+        $("[data-test-id=date] input").setValue(formatter.format(newDate));
+        $(byText("Запланировать")).click();
+        $("[data-test-id=replan-notification].notification__content").waitUntil(exist,15000).shouldHave(exactText("У вас уже запланирована встреча на другую дату.Перепланировать?"));
         $(withText("У вас уже запланирована встреча на другую дату. Перепланировать?")).shouldBe(visible);
-        $("[data-test-id=replan-notification] button.button").click();
-        $(withText("Успешно")).shouldBe(visible);
+        $("[data-test-id='replan-notification'] button__text").click();
+        $(withText("[data-test-id=success-notification].notification__content")).waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на" + formatter.format(newDate)));
     }
 
     @Test
     void shouldNotSubmitWithoutCity() {
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(7));
-        $("[name=name]").setValue(dataGenerator.makeName());
-        $("[name=phone]").setValue(dataGenerator.makePhone());
-        $(".checkbox__box").click();
+        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue(makeName);
+        $("[data-test-id=phone] input").setValue(makePhone);
+        $("[data-test-id=agreement]").click();
         $(".button__text").click();
-        $(".input_type_text.input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='city'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
     void shouldNotSubmitWithoutName() {
-        $("[placeholder='Город']").setValue(dataGenerator.makeCity());
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
-        $("[name=phone]").setValue(dataGenerator.makePhone());
-        $(".checkbox__box").click();
+        $("[data-test-id=city] input").setValue(makeCity);
+        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=phone] input").setValue(makePhone);
+        $("[data-test-id=agreement]").click();
         $(".button__text").click();
-        $(".input_type_text.input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
     void shouldNotSubmitWithIncorrectName() {
-        $("[placeholder='Город']").setValue(dataGenerator.makeCity());
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
-        $("[name=name]").setValue("Vasiliy Ivanov");
-        $("[name=phone]").setValue(dataGenerator.makePhone());
-        $(".checkbox__box").click();
+        $("[data-test-id=city] input").setValue(makeCity);
+        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue("Vasiliy Ivanov");
+        $("[data-test-id=phone] input").setValue(makePhone);
+        $("[data-test-id=agreement]").click();
         $(".button__text").click();
-        $(".input_type_text.input_invalid .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
+        $("[data-test-id='name'].input_invalid .input__sub").shouldHave(exactText("Имя и Фамилия указаные неверно. Допустимы только русские буквы, пробелы и дефисы."));
     }
 
     @Test
     void shouldNotSubmitWithoutPhone() {
-        $("[placeholder='Город']").setValue(dataGenerator.makeCity());
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
-        $("[name=name]").setValue(dataGenerator.makeName());
-        $(".checkbox__box").click();
+        $("[data-test-id=city] input").setValue(makePhone);
+        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue(makeName);
+        $("[data-test-id=agreement]").click();
         $(".button__text").click();
-        $(".input_type_tel.input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
+        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
 
     @Test
     void shouldNotSubmitWithoutCheckbox() {
-        $("[placeholder='Город']").setValue(dataGenerator.makeCity());
-        $("[placeholder='Дата встречи']").doubleClick().sendKeys(dataGenerator.forwardDate(3));
-        $("[name=name]").setValue(dataGenerator.makeName());
-        $("[name=phone]").setValue(dataGenerator.makePhone());
+        $("[data-test-id=city] input").setValue(makePhone);
+        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=name] input").setValue(makeName);
+        $("[data-test-id=phone] input").setValue(makePhone);
         $(".button__text").click();
         $(".checkbox_size_m.input_invalid .checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
