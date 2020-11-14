@@ -123,4 +123,5 @@ public class OrderCardWithDeliveryTest {
         $(".button__text").click();
         $(".checkbox_size_m.input_invalid .checkbox__text").shouldHave(exactText("Я соглашаюсь с условиями обработки и использования моих персональных данных"));
     }
+
 }
