@@ -9,11 +9,8 @@ branches:
 build: off
 
 install:
-  - ps: $App = Start-Process -FilePath java -ArgumentList "-jar ./artifacts/app-card-delivery.jar" -PassThru
+  - chmod +x gradlew
+  - java-jar ./artifacts/app-card-delivery.jar &
 
 build_script:
-  - ps: ./gradlew test --info "-Dselenide.headless=true"
-  - chmod +x gradlew
-
-on_finish:
-  - ps: Stop-Process -Id $App.Id
+  - ./gradlew test --info "-Dselenide.headless=true"
