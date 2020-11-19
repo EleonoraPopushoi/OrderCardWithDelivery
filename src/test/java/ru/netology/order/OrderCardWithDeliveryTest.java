@@ -18,7 +18,6 @@ public class OrderCardWithDeliveryTest {
     String makePhone = makePhone();
     String makeCity = makeCity();
     String randomDate = randomDate();
-    String makeInvalidOverPhoneNumber = makeInvalidOverPhoneNumber();
     String makeInvalidName = makeInvalidName();
     String makeInvalidAbovePhoneNumber = makeInvalidAbovePhoneNumber();
 
