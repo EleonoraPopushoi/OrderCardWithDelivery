@@ -2,10 +2,7 @@ package ru.netology.order;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.openqa.selenium.By;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
+import org.openqa.selenium.Keys;
 
 import static com.codeborne.selenide.Condition.*;
 import static com.codeborne.selenide.Selectors.byText;
@@ -15,15 +12,15 @@ import static com.codeborne.selenide.Selenide.open;
 import static ru.netology.generator.DataGenerator.*;
 
 public class OrderCardWithDeliveryTest {
-    LocalDate today = LocalDate.now();
-    LocalDate newDate = today.plusDays(3);
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
 
-    String makeDate = makeDate(3);
+    String newDate = makeDate();
     String makeName = makeName();
     String makePhone = makePhone();
     String makeCity = makeCity();
     String randomDate = randomDate();
+    String makeInvalidOverPhoneNumber = makeInvalidOverPhoneNumber();
+    String makeInvalidName = makeInvalidName();
+    String makeInvalidAbovePhoneNumber = makeInvalidAbovePhoneNumber();
 
     @BeforeEach
     void Setup() {
@@ -34,25 +31,24 @@ public class OrderCardWithDeliveryTest {
     void shouldSubmitRequest() {
 
         $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").sendKeys(formatter.format(newDate));
-        $("[data-test-id=date] input").setValue(formatter.format(newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=name] input").setValue(makeName);
         $("[data-test-id=phone] input").setValue(makePhone);
         $("[data-test-id=agreement]").click();
         $(byText("Запланировать")).click();
-        $("[data-test-id='notification'] .notification__content").waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на " + formatter.format(newDate)));
-        $("[data-test-id=date] input").sendKeys(randomDate);
-        $("[data-test-id=date] input").setValue(randomDate);
+        $("[data-test-id='success-notification'] .notification__content").waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на " + newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
+        $("[data-test-id=date] input").doubleClick().setValue(randomDate);
         $(byText("Запланировать")).click();
-        $("[data-test-id=replan-notification] .notification__content").waitUntil(exist,15000).shouldHave(exactText("У вас уже запланирована встреча на другую дату. Перепланировать?"));
         $(withText("У вас уже запланирована встреча на другую дату. Перепланировать?")).shouldBe(visible);
         $("[data-test-id='replan-notification'] .button__text").click();
-        $(withText("[data-test-id='notification'] .notification__content")).waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на " + formatter.format(newDate)));
+        $("[data-test-id='success-notification'] .notification__content").waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на " + randomDate));
     }
+
 
     @Test
     void shouldNotSubmitWithoutCity() {
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=name] input").setValue(makeName);
         $("[data-test-id=phone] input").setValue(makePhone);
         $("[data-test-id=agreement]").click();
@@ -63,7 +59,7 @@ public class OrderCardWithDeliveryTest {
     @Test
     void shouldNotSubmitWithoutName() {
         $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=phone] input").setValue(makePhone);
         $("[data-test-id=agreement]").click();
         $(".button__text").click();
@@ -73,8 +69,8 @@ public class OrderCardWithDeliveryTest {
     @Test
     void shouldNotSubmitWithInvalidName() {
         $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
-        $("[data-test-id=name] input").setValue("Vasiliy Ivanov");
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
+        $("[data-test-id=name] input").setValue(makeInvalidName);
         $("[data-test-id=phone] input").setValue(makePhone);
         $("[data-test-id=agreement]").click();
         $(".button__text").click();
@@ -84,30 +80,29 @@ public class OrderCardWithDeliveryTest {
     @Test
     void shouldNotSubmitWithoutPhone() {
         $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=name] input").setValue(makeName);
         $("[data-test-id=agreement]").click();
         $(".button__text").click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
-    @Test
-    void shouldNotSendOverMaxPhoneNumber() {   //баг , при вводе некорректного номера телефона, приходит тодтвкрждение об успешном процессе.
-        $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
-        $("[data-test-id=name] input").setValue(makeName);
-        $("[data-test-id=phone] input").setValue("+7901234567890008");
-        $("[data-test-id=agreement]").click();
-        $(By.className("button")).click();
-        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
-
-    }
+//    @Test
+//   void shouldNotSendOverMaxPhoneNumber() {   //Тест падает, при вводе в поле "Номер телефона" значение больше , чем заданно в системе. Это происходит , потому что в поле "Номер телефона" не возможно ввести больше 11 значений, поэтому тест падает и сообщение об ошибке не появляется, а наодород в тесте пояаляется сообщение об успешном завершении, так как в поле ввоодится 11 значений , в не больше как указанно в тесте. .
+//        $("[data-test-id=city] input").setValue(makeCity);
+//        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
+//        $("[data-test-id=name] input").setValue(makeName);
+//        $("[data-test-id=phone] input").setValue(makeInvalidOverPhoneNumber);
+//        $("[data-test-id=agreement]").click();
+//        $(".button__text").click();
+//        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
+//    }
 
     @Test
     void shouldNotSendAboveMinPhoneNumber() {   //баг , при вводе некорректного номера телефона, приходит тодтвкрждение об успешном процессе.
         $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=name] input").setValue(makeName);;
-        $("[data-test-id=phone] input").setValue("7901234");
+        $("[data-test-id=phone] input").setValue(makeInvalidAbovePhoneNumber);
         $("[data-test-id=agreement]").click();
         $(".button__text").click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
@@ -117,7 +112,7 @@ public class OrderCardWithDeliveryTest {
     @Test
     void shouldNotSubmitWithoutCheckbox() {
         $("[data-test-id=city] input").setValue(makeCity);
-        $("[data-test-id=date] input").doubleClick().sendKeys(formatter.format(newDate));
+        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=name] input").setValue(makeName);
         $("[data-test-id=phone] input").setValue(makePhone);
         $(".button__text").click();

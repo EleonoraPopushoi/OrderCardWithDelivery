@@ -49,11 +49,11 @@ public class DataGenerator {
         return faker.phoneNumber().phoneNumber();
     }
 
-    public static String makeInvalidOverPhoneNumber() {
-        Faker faker = new Faker(new Locale("ru"));
-        String phone = faker.phoneNumber().phoneNumber();
-        return new String("+7901234567890008");
-    }
+    //  public static String makeInvalidOverPhoneNumber() {
+    //      Faker faker = new Faker(new Locale("ru"));
+    //       String phone = faker.phoneNumber().phoneNumber();
+    //      return new String("+7901234567890008");
+//}
 
     public static String makeInvalidAbovePhoneNumber() {
         Faker faker = new Faker(new Locale("ru"));
