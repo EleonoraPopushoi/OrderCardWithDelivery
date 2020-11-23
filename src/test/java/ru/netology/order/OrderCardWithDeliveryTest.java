@@ -19,7 +19,7 @@ public class OrderCardWithDeliveryTest {
     String makeCity = makeCity();
     String randomDate = randomDate();
     String makeInvalidName = makeInvalidName();
-    String makeInvalidAbovePhoneNumber = makeInvalidAbovePhoneNumber();
+    String makeInvalidAboveMinPhoneNumber = makeInvalidAboveMinPhoneNumber();
 
     @BeforeEach
     void Setup() {
@@ -35,13 +35,13 @@ public class OrderCardWithDeliveryTest {
         $("[data-test-id=phone] input").setValue(makePhone);
         $("[data-test-id=agreement]").click();
         $(byText("Запланировать")).click();
-        $("[data-test-id='success-notification'] .notification__content").waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на " + newDate));
+        $("[data-test-id='success-notification'] .notification__content").waitUntil(visible,15000).shouldHave(exactText("Встреча успешно запланирована на " + newDate));
         $("[data-test-id=date] input").doubleClick().sendKeys(Keys.BACK_SPACE);
         $("[data-test-id=date] input").doubleClick().setValue(randomDate);
         $(byText("Запланировать")).click();
         $(withText("У вас уже запланирована встреча на другую дату. Перепланировать?")).shouldBe(visible);
         $("[data-test-id='replan-notification'] .button__text").click();
-        $("[data-test-id='success-notification'] .notification__content").waitUntil(exist,15000).shouldHave(exactText("Встреча успешно запланирована на " + randomDate));
+        $("[data-test-id='success-notification'] .notification__content").waitUntil(visible,15000).shouldHave(exactText("Встреча успешно запланирована на " + randomDate));
     }
 
 
@@ -85,27 +85,16 @@ public class OrderCardWithDeliveryTest {
         $(".button__text").click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Поле обязательно для заполнения"));
     }
-//    @Test
-//   void shouldNotSendOverMaxPhoneNumber() {   //Тест падает, при вводе в поле "Номер телефона" значение больше , чем заданно в системе. Это происходит , потому что в поле "Номер телефона" не возможно ввести больше 11 значений, поэтому тест падает и сообщение об ошибке не появляется, а наодород в тесте пояаляется сообщение об успешном завершении, так как в поле ввоодится 11 значений , в не больше как указанно в тесте. .
-//        $("[data-test-id=city] input").setValue(makeCity);
-//        $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
-//        $("[data-test-id=name] input").setValue(makeName);
-//        $("[data-test-id=phone] input").setValue(makeInvalidOverPhoneNumber);
-//        $("[data-test-id=agreement]").click();
-//        $(".button__text").click();
-//        $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
-//    }
 
     @Test
     void shouldNotSendAboveMinPhoneNumber() {   //баг , при вводе некорректного номера телефона, приходит тодтвкрждение об успешном процессе.
         $("[data-test-id=city] input").setValue(makeCity);
         $("[data-test-id=date] input").doubleClick().sendKeys(newDate);
         $("[data-test-id=name] input").setValue(makeName);;
-        $("[data-test-id=phone] input").setValue(makeInvalidAbovePhoneNumber);
+        $("[data-test-id=phone] input").setValue(makeInvalidAboveMinPhoneNumber);
         $("[data-test-id=agreement]").click();
         $(".button__text").click();
         $("[data-test-id='phone'].input_invalid .input__sub").shouldHave(exactText("Телефон указан неверно. Должно быть 11 цифр, например, +79012345678."));
-
     }
 
     @Test
