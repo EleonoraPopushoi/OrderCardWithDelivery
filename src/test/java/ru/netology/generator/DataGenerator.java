@@ -39,8 +39,8 @@ public class DataGenerator {
     }
 
     public static String makeInvalidName() {
-        Faker faker = new Faker(new Locale("en"));
-        return faker.name().lastName() + faker.name().firstName();
+        Faker faker = new Faker(new Locale("en"));;
+        return faker.name().lastName() + (faker.name().firstName());
 
     }
 
@@ -49,15 +49,8 @@ public class DataGenerator {
         return faker.phoneNumber().phoneNumber();
     }
 
-    //  public static String makeInvalidOverPhoneNumber() {
-    //      Faker faker = new Faker(new Locale("ru"));
-    //       String phone = faker.phoneNumber().phoneNumber();
-    //      return new String("+7901234567890008");
-//}
-
-    public static String makeInvalidAbovePhoneNumber() {
+    public static String makeInvalidAboveMinPhoneNumber() {
         Faker faker = new Faker(new Locale("ru"));
-        String phone = faker.phoneNumber().phoneNumber();
-        return new String("+790123");
+        return faker.number().digits(6);
     }
 }
