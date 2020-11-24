@@ -34,13 +34,13 @@ public class DataGenerator {
 
     public static String makeName() {
         Faker faker = new Faker(new Locale("ru"));
-        return faker.name().lastName() + faker.name().firstName();
+        return faker.name().lastName() + " " + faker.name().firstName();
 
     }
 
     public static String makeInvalidName() {
         Faker faker = new Faker(new Locale("en"));;
-        return faker.name().lastName() + (faker.name().firstName());
+        return faker.name().lastName() + " " + faker.name().firstName();
 
     }
 
